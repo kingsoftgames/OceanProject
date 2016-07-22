@@ -36,8 +36,8 @@ Intermediate/**
 Plugins/**/Intermediate/**
 
 # Exclude executable binaries too (game DLLs)
-#/*/Binaries/**
-#/*/Plugins/**/Binaries/**
+Binaries/**
+Plugins/**/Binaries/**
 
 # Ignore any saved local files
 Saved/**
@@ -52,9 +52,3 @@ Saved/**
 #Ignore debug data files
 *.pdb
 *.exp
-
-
-Binaries
-Build/
-Saved/
-Intermediate/

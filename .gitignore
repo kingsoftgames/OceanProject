@@ -52,3 +52,9 @@ Saved/**
 #Ignore debug data files
 *.pdb
 *.exp
+
+
+Binaries
+Build
+Saved
+Intermediate

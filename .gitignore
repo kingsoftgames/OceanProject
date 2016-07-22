@@ -55,6 +55,6 @@ Saved/**
 
 
 Binaries
-Build
-Saved
-Intermediate
+Build/
+Saved/
+Intermediate/

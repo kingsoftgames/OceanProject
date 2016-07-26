@@ -18,6 +18,10 @@ public class OceanPlugin : ModuleRules
         PrivateIncludePaths.AddRange(new string[] { "OceanPlugin/Private" });
        // PublicIncludePaths.AddRange(new string[] { "OceanPlugin/Public" });
 
-        PublicDependencyModuleNames.AddRange(new string[] { "Engine", "Core", "CoreUObject", "InputCore", "PhysX", "APEX", "Landscape" });
+        PublicDependencyModuleNames.AddRange(new string[] { "Engine", "Core", "CoreUObject", "InputCore", "PhysX", "Landscape" });
+        if (Target.Platform != UnrealTargetPlatform.Android && Target.Platform != UnrealTargetPlatform.HTML5 && Target.Platform != UnrealTargetPlatform.IOS)
+        {
+	          PublicDependencyModuleNames.AddRange(new string[]{"APEX"});
+        }
     }
 }

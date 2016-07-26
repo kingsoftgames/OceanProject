@@ -19,7 +19,13 @@
 * =================================================*/
 
 #pragma once
-
+//Apex issues
+#if PLATFORM_ANDROID || PLATFORM_HTML5_BROWSER || PLATFORM_IOS
+#ifdef WITH_APEX
+#undef WITH_APEX
+#endif
+#define WITH_APEX 0
+#endif //APEX EXCLUSIONS
 #include "PhysXIncludes.h"
 #include "BuoyantMeshComponent.generated.h"
 

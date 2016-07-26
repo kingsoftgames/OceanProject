@@ -1,6 +1,6 @@
 /*=================================================
 * FileName: BuoyantDestructibleComponent.cpp
-* 
+*
 * Created by: TK-Master
 * Project name: OceanProject
 * Unreal Engine version: 4.12.2
@@ -8,7 +8,7 @@
 *
 * Last Edited on: 2016/06/10
 * Last Edited by: DotCam
-* 
+*
 * -------------------------------------------------
 * For parts referencing UE4 code, the following copyright applies:
 * Copyright 1998-2015 Epic Games, Inc. All Rights Reserved.
@@ -21,8 +21,16 @@
 #include "OceanPluginPrivatePCH.h"
 #include "BuoyantDestructibleComponent.h"
 
-// PhysX 			
-#include "PhysXIncludes.h" 
+//Apex issues
+#if PLATFORM_ANDROID || PLATFORM_HTML5_BROWSER || PLATFORM_IOS
+#ifdef WITH_APEX
+#undef WITH_APEX
+#endif
+#define WITH_APEX 0
+#endif //APEX EXCLUSIONS
+
+// PhysX
+#include "PhysXIncludes.h"
 #include "PhysXPublic.h"
 
 UBuoyantDestructibleComponent::UBuoyantDestructibleComponent(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -60,7 +68,7 @@ void UBuoyantDestructibleComponent::InitializeComponent()
 			break;
 		}
 	}
-	
+
 	_baseLinearDamping = GetLinearDamping();
 	_baseAngularDamping = GetAngularDamping();
 }
@@ -78,7 +86,7 @@ void UBuoyantDestructibleComponent::TickComponent(float DeltaTime, enum ELevelTi
 	//Signed based on gravity, just in case we need an upside down world
 	_SignedRadius = FMath::Sign(Gravity) * TestPointRadius;
 
-#if WITH_PHYSX
+#if WITH_APEX
 	uint32 ChunkCount = ApexDestructibleActor->getNumVisibleChunks();
 	const uint16* ChunkIndices = ApexDestructibleActor->getVisibleChunks();
 	for (uint32 c = 0; c < ChunkCount; c++)
@@ -150,67 +158,67 @@ void UBuoyantDestructibleComponent::TickComponent(float DeltaTime, enum ELevelTi
 			}
 		}
 	}
-#endif // WITH_PHYSX 
+#endif // WITH_APEX
 
 // 	for (const FName& BoneName : GetAllSocketNames())
 // 	{
 // 		FBodyInstance* ChunkBI = GetBodyInstance(BoneName);
-// 
+//
 // 		if (!ChunkBI)
 // 			continue;
-// 
+//
 // 		FVector Location = ChunkBI->GetUnrealWorldTransform().GetLocation();
-// 
+//
 // 		float waveHeight = OceanManager->GetWaveHeightValue(Location).Z;
 // 		bool isUnderwater = false;
-// 
+//
 // 		//ChunkBI->GetBodyMass()
-// 
+//
 // 		//If test point radius is touching water add buoyancy force
 // 		if (waveHeight > (Location.Z + _SignedRadius))
 // 		{
 // 			isUnderwater = true;
-// 
+//
 // 			float DepthMultiplier = (waveHeight - (Location.Z + _SignedRadius)) / (TestPointRadius * 2);
 // 			DepthMultiplier = FMath::Clamp(DepthMultiplier, 0.f, 1.f);
-// 
+//
 // 			/**
 // 			* --------
 // 			* Buoyancy force formula: (Volume(Mass / Density) * Fluid Density * -Gravity) * Depth Multiplier
 // 			* --------
 // 			*/
 // 			float BuoyancyForceZ = ChunkBI->GetBodyMass() / ChunkDensity * FluidDensity * -Gravity * DepthMultiplier;
-// 
+//
 // 			//Velocity damping
 // 			FVector DampingForce = ChunkBI->GetUnrealWorldVelocity() * VelocityDamper * ChunkBI->GetBodyMass() * DepthMultiplier;
-// 
+//
 // 			//Wave push force
 // 			if (EnableWaveForces)
 // 			{
 // 				float waveVelocity = FMath::Clamp(ChunkBI->GetUnrealWorldVelocity().Z, -20.f, 150.f) * (1 - DepthMultiplier);
 // 				DampingForce += OceanManager->WaveDirection * ChunkBI->GetBodyMass() * waveVelocity * WaveForceMultiplier;
 // 			}
-// 
+//
 // 			//Add force for this chunk
 // 			ChunkBI->AddForce(FVector(DampingForce.X, DampingForce.Y, DampingForce.Z + BuoyancyForceZ));
 // 		}
-// 
+//
 // 		if (DrawDebugPoints)
 // 		{
 // 			FColor DebugColor = FLinearColor(0.8, 0.7, 0.2, 0.8).ToRGBE();
 // 			if (isUnderwater) { DebugColor = FLinearColor(0, 0.2, 0.7, 0.8).ToRGBE(); } //Blue color underwater, yellow out of watter
 // 			DrawDebugSphere(GetWorld(), Location, TestPointRadius, 8, DebugColor);
 // 		}
-// 
+//
 // 		//Advanced
 // 		//Chunk->setSleepThreshold(ChunkSleepThreshold);
 // 		//Chunk->setStabilizationThreshold(ChunkStabilizationThreshold);
-// 
+//
 // 		//Update damping based on isUnderwater
 // 		ChunkBI->LinearDamping = _baseLinearDamping + FluidLinearDamping * isUnderwater;
 // 		ChunkBI->AngularDamping = _baseAngularDamping + FluidAngularDamping * isUnderwater;
 // 		ChunkBI->UpdateDampingProperties();
-// 
+//
 // 		//Clamp the chunk's velocity to MaxUnderwaterVelocity if chunk is underwater
 // 		if (ClampMaxVelocity && isUnderwater
 // 			&& ChunkBI->GetUnrealWorldVelocity().Size() > MaxUnderwaterVelocity)
